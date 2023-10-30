@@ -28,12 +28,19 @@ export function printReceipt(tags: string[]): string {
   for (const itemBarcode in itemsMap) {
     receiptLines.push(generateReceiptLine(itemBarcode))
   }
-
-
   return renderReceipt(receiptLines)
 }
 function generateReceiptLine(barcode: string): string{
   const { product, quantity } = itemsMap[barcode]
+  const subtotal = handlePromotion(product,quantity)
+  total += subtotal
+  let unit = ''
+  if (quantity > 1)
+    unit += (product.unit + 's')
+  const line = `Name：${product.name}，Quantity：${quantity} ${unit}，Unit：${product.price.toFixed(2)}(yuan)，Subtotal：${subtotal.toFixed(2)}(yuan)`
+  return line
+}
+function handlePromotion(product: ReceiptItem,quantity: number): number{
   let subtotal = product.price * quantity
   const promo = promotionList.find(item => item.barcodes.includes(product.barcode))
   // Handle promotions
@@ -41,14 +48,9 @@ function generateReceiptLine(barcode: string): string{
     const freeItems = Math.floor(quantity / 3)
     savings += freeItems * product.price
     subtotal -= freeItems * product.price
+    return subtotal
   }
-
-  total += subtotal
-  let unit = ''
-  if (quantity > 1)
-    unit += (product.unit + 's')
-  const line = `Name：${product.name}，Quantity：${quantity} ${unit}，Unit：${product.price.toFixed(2)}(yuan)，Subtotal：${subtotal.toFixed(2)}(yuan)`
-  return line
+  return subtotal
 
 }
 function isValidTag(tags: string[]): boolean {
@@ -90,18 +92,4 @@ function renderReceipt(receiptLines: string[]): string {
 
   return receiptStr
 }
-
-// const tags = [
-//   'ITEM000001',
-//   'ITEM000001',
-//   'ITEM000001',
-//   'ITEM000001',
-//   'ITEM000001',
-//   'ITEM000003-2.5',
-//   'ITEM000005--1',
-//   'ITEM000005-2',
-// ]
-
-
-// console.log(printReceipt(tags))
 
