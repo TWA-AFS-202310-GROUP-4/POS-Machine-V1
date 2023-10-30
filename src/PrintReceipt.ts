@@ -26,26 +26,30 @@ export function printReceipt(tags: string[]): string {
   processTags(tags)
 
   for (const itemBarcode in itemsMap) {
-    const { product, quantity } = itemsMap[itemBarcode]
-    let subtotal = product.price * quantity
-    const promo = promotionList.find(item => item.barcodes.includes(product.barcode))
-    // Handle promotions
-    if (promo && promo.type === 'BUY_TWO_GET_ONE_FREE') {
-      const freeItems = Math.floor(quantity / 3)
-      savings += freeItems * product.price
-      subtotal -= freeItems * product.price
-    }
-
-    total += subtotal
-    let unit = ''
-    if (quantity > 1)
-      unit += (product.unit + 's')
-    const line = `Name：${product.name}，Quantity：${quantity} ${unit}，Unit：${product.price.toFixed(2)}(yuan)，Subtotal：${subtotal.toFixed(2)}(yuan)`
-    receiptLines.push(line)
+    receiptLines.push(generateReceiptLine(itemBarcode))
   }
 
 
   return renderReceipt(receiptLines)
+}
+function generateReceiptLine(barcode: string): string{
+  const { product, quantity } = itemsMap[barcode]
+  let subtotal = product.price * quantity
+  const promo = promotionList.find(item => item.barcodes.includes(product.barcode))
+  // Handle promotions
+  if (promo && promo.type === 'BUY_TWO_GET_ONE_FREE') {
+    const freeItems = Math.floor(quantity / 3)
+    savings += freeItems * product.price
+    subtotal -= freeItems * product.price
+  }
+
+  total += subtotal
+  let unit = ''
+  if (quantity > 1)
+    unit += (product.unit + 's')
+  const line = `Name：${product.name}，Quantity：${quantity} ${unit}，Unit：${product.price.toFixed(2)}(yuan)，Subtotal：${subtotal.toFixed(2)}(yuan)`
+  return line
+
 }
 function isValidTag(tags: string[]): boolean {
   for (const tag of tags) {
