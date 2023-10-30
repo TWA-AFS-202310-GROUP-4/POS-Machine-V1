@@ -24,4 +24,37 @@ Discounted prices：7.50(yuan)
 
     expect(printReceipt(tags)).toEqual(expectText)
   })
+  it('should print Invalid tag when receipt wrong', () => {
+    const tags = [
+      'ITEM0000010',
+      'ITEM000001',
+      'ITEM000001',
+      'ITEM0000010',
+      'ITEM000001',
+      'ITEM000003-2.5',
+      'ITEM000005',
+      'ITEM000005-2',
+    ]
+
+    const expectText = `Invalid tag`
+
+    expect(printReceipt(tags)).toEqual(expectText)
+  })
+  it('should print Invalid tag when num is str', () => {
+    const tags = [
+      'ITEM0000010',
+      'ITEM000001',
+      'ITEM000001',
+      'ITEM0000010',
+      'ITEM000001-d',
+      'ITEM000003-2.5',
+      'ITEM000005',
+      'ITEM000005-2',
+    ]
+
+    const expectText = `Invalid tag`
+
+    expect(printReceipt(tags)).toEqual(expectText)
+  })
+
 })

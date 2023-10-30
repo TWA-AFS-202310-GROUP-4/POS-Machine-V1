@@ -54,13 +54,10 @@ function generateReceiptLine(barcode: string): string{
 function isValidTag(tags: string[]): boolean {
   for (const tag of tags) {
     const [barcode, quantityStr] = tag.split('-')
-    if (!barcode || (quantityStr && isNaN(Number(quantityStr)))) {
+    if(!receiptItemList.some(p => p.barcode === barcode)){
       return false
     }
-    if (!receiptItemList.some(p => p.barcode === barcode)) {
-      return false
-    }
-    if (quantityStr && parseFloat(quantityStr) <= 0) {
+    if(quantityStr && isNaN(parseFloat(quantityStr))){
       return false
     }
   }
@@ -85,10 +82,8 @@ function processTags(tags: string[]): void {
 function renderReceipt(receiptLines: string[]): string {
 
   let receiptStr = "***<store earning no money>Receipt ***\n"
-  for (const line of receiptLines) {
-    receiptStr += line + "\n"
-  }
-  receiptStr += "----------------------\n"
+  receiptStr += receiptLines.join('\n')
+  receiptStr += "\n----------------------\n"
   receiptStr += `Total：${total.toFixed(2)}(yuan)\n`
   receiptStr += `Discounted prices：${savings.toFixed(2)}(yuan)\n`
   receiptStr += "**********************"
@@ -103,7 +98,7 @@ function renderReceipt(receiptLines: string[]): string {
 //   'ITEM000001',
 //   'ITEM000001',
 //   'ITEM000003-2.5',
-//   'ITEM000005',
+//   'ITEM000005--1',
 //   'ITEM000005-2',
 // ]
 
