@@ -17,14 +17,16 @@ const receiptItemList: ReceiptItem[] = loadAllItems()
 const promotionList: Promotion[] = loadPromotions()
 let total = 0
 let savings = 0
-const itemsMap: { [key: string]: { product: ReceiptItem, quantity: number } } = {}
+let itemsMap: { [key: string]: { product: ReceiptItem, quantity: number } } = {}
 
 
 export function printReceipt(tags: string[]): string {
+  itemsMap = {}
+  total = 0
+  savings = 0
   if (!isValidTag(tags)) return `Invalid tag`
   const receiptLines: string[] = []
   processTags(tags)
-
   for (const itemBarcode in itemsMap) {
     receiptLines.push(generateReceiptLine(itemBarcode))
   }
@@ -34,9 +36,10 @@ function generateReceiptLine(barcode: string): string{
   const { product, quantity } = itemsMap[barcode]
   const subtotal = handlePromotion(product,quantity)
   total += subtotal
-  let unit = ''
-  if (quantity > 1)
-    unit += (product.unit + 's')
+  let unit = product.unit
+  if (quantity > 1 || (quantity > 0 && quantity < 1) ){
+    unit += 's'
+  }
   const line = `Name：${product.name}，Quantity：${quantity} ${unit}，Unit：${product.price.toFixed(2)}(yuan)，Subtotal：${subtotal.toFixed(2)}(yuan)`
   return line
 }
@@ -93,3 +96,14 @@ function renderReceipt(receiptLines: string[]): string {
   return receiptStr
 }
 
+// const tags = [
+//   'ITEM000001',
+//   'ITEM000001',
+//   'ITEM000001',
+//   'ITEM000001',
+//   'ITEM000001',
+//   'ITEM000003-0.5',
+//   'ITEM000005',
+//   'ITEM000005-2',
+// ]
+// console.log(printReceipt(tags))
