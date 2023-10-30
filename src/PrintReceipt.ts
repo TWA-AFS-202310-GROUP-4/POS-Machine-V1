@@ -7,17 +7,22 @@ interface ReceiptItem {
   name: string
   unit: string
   price: number
+  quantity: number
 }
+
 interface Promotion {
   type: string
   barcodes: string[]
 }
 
-const receiptItemList: ReceiptItem[] = loadAllItems()
+const receiptItemList: ReceiptItem[] = loadAllItems().map(item => ({
+  ...item,
+  quantity :  0
+}))
 const promotionList: Promotion[] = loadPromotions()
 let total = 0
 let savings = 0
-let itemsMap: { [key: string]: { product: ReceiptItem, quantity: number } } = {}
+let itemsMap: { [key: string]: ReceiptItem } = {}
 
 
 export function printReceipt(tags: string[]): string {
@@ -33,22 +38,22 @@ export function printReceipt(tags: string[]): string {
   return renderReceipt(receiptLines)
 }
 function generateReceiptLine(barcode: string): string{
-  const { product, quantity } = itemsMap[barcode]
-  const subtotal = handlePromotion(product,quantity)
+  const product = itemsMap[barcode]
+  const subtotal = handlePromotion(product)
   total += subtotal
   let unit = product.unit
-  if (quantity > 1 || (quantity > 0 && quantity < 1) ){
+  if (product.quantity > 1 || (product.quantity > 0 && product.quantity < 1) ){
     unit += 's'
   }
-  const line = `Name：${product.name}，Quantity：${quantity} ${unit}，Unit：${product.price.toFixed(2)}(yuan)，Subtotal：${subtotal.toFixed(2)}(yuan)`
+  const line = `Name：${product.name}，Quantity：${product.quantity} ${unit}，Unit：${product.price.toFixed(2)}(yuan)，Subtotal：${subtotal.toFixed(2)}(yuan)`
   return line
 }
-function handlePromotion(product: ReceiptItem,quantity: number): number{
-  let subtotal = product.price * quantity
+function handlePromotion(product: ReceiptItem): number{
+  let subtotal = product.price * product.quantity
   const promo = promotionList.find(item => item.barcodes.includes(product.barcode))
   // Handle promotions
   if (promo && promo.type === 'BUY_TWO_GET_ONE_FREE') {
-    const freeItems = Math.floor(quantity / 3)
+    const freeItems = Math.floor(product.quantity / 3)
     savings += freeItems * product.price
     subtotal -= freeItems * product.price
     return subtotal
@@ -73,12 +78,13 @@ function processTags(tags: string[]): void {
     const [itemBarcode, quantityStr] = tag.split('-')
     const quantity = quantityStr ? parseFloat(quantityStr) : 1
     const product = receiptItemList.find(p => p.barcode === itemBarcode)
-
-    if (!product) continue
-    if (itemsMap[product.barcode]) {
-      itemsMap[product.barcode].quantity += quantity
-    } else {
-      itemsMap[product.barcode] = { product, quantity }
+    if (product){
+      if (itemsMap[product.barcode]) {
+        itemsMap[product.barcode].quantity += quantity
+      } else {
+        itemsMap[product.barcode] = product
+        itemsMap[product.barcode].quantity = quantity
+      }
     }
   }
 }
@@ -102,7 +108,7 @@ function renderReceipt(receiptLines: string[]): string {
 //   'ITEM000001',
 //   'ITEM000001',
 //   'ITEM000001',
-//   'ITEM000003-0.5',
+//   'ITEM000003-2.5',
 //   'ITEM000005',
 //   'ITEM000005-2',
 // ]
