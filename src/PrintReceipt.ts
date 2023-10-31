@@ -65,7 +65,7 @@ async function loadPromotions() : Promise<Promotion[]> {
   ]
 }
 
-async function printReceipt(items : string[]) : Promise<string> {
+export async function printReceipt(items : string[]) : Promise<string> {
   const allItems = await loadAllItems();
   const promotions = await loadPromotions();
   
