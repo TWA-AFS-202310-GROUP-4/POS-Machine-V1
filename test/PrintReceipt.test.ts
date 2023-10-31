@@ -22,6 +22,18 @@ Total：58.50(yuan)
 Discounted prices：7.50(yuan)
 **********************`
 
+
     expect(printReceipt(tags)).toEqual(expectText)
   })
+
+  // it('should throw error when give barcode that does not exist', () => {
+  //   const tags = [
+  //     'ITEM00001'
+  //   ]
+
+  //   const expectText = ``
+
+  //   expect(printReceipt(tags)).toThrow(Error)
+  // })
+
 })
