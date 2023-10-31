@@ -2,6 +2,7 @@ import { error } from 'console'
 import { loadAllItems } from './Dependencies'
 import { ItemInfo } from './model/itemInfo'
 import { ParsedInfo } from './model/parsedInfo'
+import { PromotionInfo } from './model/promotionInfo'
 
 export class PrintReceipt {
   public printReceipt(productList: string[]):string|null {
@@ -9,13 +10,14 @@ export class PrintReceipt {
     const parsedInfo = this.aggregateProductInfo(productList)
     if (parsedInfo === null)
       return null
+    console.log(parsedInfo)
     return "ssss"
   }
 
   private isProductInfoValid(itemList: ItemInfo[], productionList: string[]): boolean {
     const tagList = Array.from(itemList, item => item.barcode)
     for (let i = 0; i < productionList.length; i++) {
-      if (tagList.indexOf(productionList[i].slice(0, 10)) === -1) {
+      if (!tagList.includes(productionList[i].slice(0, 10))) {
         return false
       }
     }
@@ -49,5 +51,17 @@ export class PrintReceipt {
     if (!productItem.includes('-'))
       return 1
     return Number(productItem.slice(productItem.indexOf('-') + 1))
+  }
+
+  private caculateProductDetail(parsedInfoList:ParsedInfo[]){
+
+  }
+
+  private caculateProductItem(items:ItemInfo[],promotionInfo:PromotionInfo,parsedItem:ParsedInfo){
+
+  }
+
+  private isInPromotion(promotionInfo:PromotionInfo,parsedItem:ParsedInfo){
+    return promotionInfo.barcodes.includes(parsedItem.barcode)
   }
 }
