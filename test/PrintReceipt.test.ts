@@ -26,6 +26,23 @@ Discounted prices：7.50(yuan)
     expect(printReceipt(tags)).toEqual(expectText)
   })
 
+  it('should print receipt with promotion when print receipt do not trigger discount', () => {
+    const tags = [
+      'ITEM000001',
+      'ITEM000005-1',
+    ]
+
+    const expectText = `***<store earning no money>Receipt ***
+Name：Sprite，Quantity：1 bottles，Unit：3.00(yuan)，Subtotal：3.00(yuan)
+Name：Instant Noodles，Quantity：1 bags，Unit：4.50(yuan)，Subtotal：4.50(yuan)
+----------------------
+Total：7.50(yuan)
+Discounted prices：0.00(yuan)
+**********************`
+
+    expect(printReceipt(tags)).toEqual(expectText)
+  })
+
   // it('should throw error when give barcode that does not exist', () => {
   //   const tags = [
   //     'ITEM00001'
