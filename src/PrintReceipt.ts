@@ -12,11 +12,11 @@ export class PrintReceipt {
     const parsedInfo = this.aggregateProductInfo(productList)
     if (parsedInfo === null)
       return null
-    //console.log(parsedInfo)
+    console.log(parsedInfo)
     const receipt = this.caculateProductDetail(parsedInfo)
     console.log(receipt)
     const totalExpense=this.caculateProductsTotalExpense(receipt)
-    const totalDiscount=this.caculateProductsTotalExpense(receipt)
+    const totalDiscount=this.caculateProductsTotalDiscount(receipt)
     return this.renderRecepit(totalExpense,totalDiscount,receipt)
   }
 
@@ -44,7 +44,7 @@ export class PrintReceipt {
   }
 
   private caculateProductQuantity(currentParsedInfo: ParsedInfo[], productItem: string): ParsedInfo[] {
-    const index = currentParsedInfo.findIndex(item => item.barcode === productItem)
+    const index = currentParsedInfo.findIndex(item => item.barcode === productItem.slice(0, 10))
     if (index === -1) {
       currentParsedInfo.push({ barcode: productItem.slice(0, 10), quantity: this.parseProductQuantity(productItem) })
     } else {
@@ -92,7 +92,7 @@ export class PrintReceipt {
 
   private caculateSubDiscount(parsedItem: ParsedInfo, promoted: boolean, unitPrice: number): number {
     if (!promoted) return 0
-    return parsedItem.quantity / 3 * unitPrice
+    return Math.floor(parsedItem.quantity / 3 )* unitPrice
   }
 
   private caculateSubTotal(parsedItem: ParsedInfo, unitPrice: number, subTotalDiscount: number) {
@@ -118,10 +118,10 @@ export class PrintReceipt {
   private renderRecepit(totalExpense:number,totalDiscount:number,receiptList: ReceiptItem[]):string{
     const title='***<store earning no money>Receipt ***'
     const content = receiptList.map(item=>{
-      return `Name:${item.name},Quantity:${item.quantity.value} ${item.quantity.quantifier},Unit:${item.unitPrice.toFixed(2)},subTotal:${item.subTotal.toFixed(2)}(yuan)`
+      return `Name:${item.name},Quantity:${item.quantity.value} ${item.quantity.quantifier},Unit:${item.unitPrice.toFixed(2)}(yuan),Subtotal:${item.subTotal.toFixed(2)}(yuan)`
     }).join('\n')
     const dived='----------------------'
-    const conculusion = `Total:${totalExpense.toFixed(2)}(yuan)`+'\n'+`Total:${totalDiscount.toFixed(2)}(yuan)`
-    return title+content+dived+conculusion
+    const conculusion = `Total:${totalExpense.toFixed(2)}(yuan)`+'\n'+`Discounted prices:${totalDiscount.toFixed(2)}(yuan)`+'\n'+'**********************'
+    return title+'\n'+content+'\n'+dived+'\n'+conculusion
   }
 }
