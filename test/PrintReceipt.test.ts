@@ -1,27 +1,27 @@
 import {printReceipt} from '../src/PrintReceipt'
 
 describe('printReceipt', () => {
-  it('should print receipt with promotion when print receipt', () => {
+  it('should print receipt with promotion when print receipt', async () => {
     const tags = [
       'ITEM000001',
       'ITEM000001',
       'ITEM000001',
-      'ITEM000001',
-      'ITEM000001',
-      'ITEM000003-2.5',
-      'ITEM000005',
-      'ITEM000005-2',
-    ]
+      'ITEM000002-5',
+      'ITEM000003-2',
+      'ITEM000004-1.5'
+    ];
 
-    const expectText = `***<store earning no money>Receipt ***
-Name：Sprite，Quantity：5 bottles，Unit：3.00(yuan)，Subtotal：12.00(yuan)
-Name：Litchi，Quantity：2.5 pounds，Unit：15.00(yuan)，Subtotal：37.50(yuan)
-Name：Instant Noodles，Quantity：3 bags，Unit：4.50(yuan)，Subtotal：9.00(yuan)
+    const expected = `***<store earning no money>Receipt ***
+Name: Coca-Cola, Quantity: 3 bottles, Unit: 3.00(yuan), Subtotal: 6.00(yuan)
+Name: Badminton, Quantity: 5 , Unit: 1.00(yuan), Subtotal: 4.00(yuan)
+Name: Apples, Quantity: 2 poundss, Unit: 5.50(yuan), Subtotal: 11.00(yuan)
+Name: Oranges, Quantity: 1.5 poundss, Unit: 5.50(yuan), Subtotal: 8.25(yuan)
 ----------------------
-Total：58.50(yuan)
-Discounted prices：7.50(yuan)
-**********************`
+Total: 29.25(yuan)
+Discounted prices: 4.00(yuan)
+**********************`;
 
-    expect(printReceipt(tags)).toEqual(expectText)
-  })
-})
+    const result = await printReceipt(tags);
+    expect(result).toEqual(expected);
+  });
+});
