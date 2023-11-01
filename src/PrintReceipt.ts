@@ -40,7 +40,7 @@ function parseAndValidate(tags: string[]): ItemInfo[] {
 
   const itemInfos: ItemInfo[] = []
 
-  for(const tag of tags){
+  for(const tag of tags) {
     const splitRes = tag.split('-')
     const barcode = splitRes[0]
 
@@ -54,7 +54,7 @@ function parseAndValidate(tags: string[]): ItemInfo[] {
       quantity = parseFloat(splitRes[1])
     }
 
-    const itemInfo = itemInfos.find((v,i,o) => v.barcode === barcode)
+    const itemInfo = itemInfos.find(v => v.barcode === barcode)
     if (itemInfo === undefined){
       itemInfos.push(
         {
@@ -76,13 +76,13 @@ function parseAndValidate(tags: string[]): ItemInfo[] {
 }
 
 function getInfoByBarCode(barcode: string, items: ItemBasicInfo[]): ItemBasicInfo | undefined{
-  return items.find((v,i,o) => v.barcode === barcode)
+  return items.find(v => v.barcode === barcode)
 }
 
 function getPromotionTypeByBarCode(barcode: string, promotions: Promotion[]): string{
 
   const promotionsFilted = promotions.filter(
-    (v,i,a) => v.barcodes.findIndex((v,i,o)=>v===barcode) !== -1
+    p => p.barcodes.some(v=>v===barcode)
   )
 
   if (promotionsFilted.length > 0){
@@ -114,11 +114,12 @@ function generateReceipt(itemInfos: ItemInfo[]): Receipt {
 }
 
 function getAccountNeedToPay(quantity: number): number{
-  for(let x = 1;;x++){
-    if (x + Math.floor(x/2) >= quantity){
-      return x
-    }
-  }
+  return quantity - Math.floor(quantity / 3)
+  // for(let x = 1; x <= quantity;x++){
+  //   if (x + Math.floor(x/2) >= quantity){
+  //     return x
+  //   }
+  // }
 }
 
 function renderReceipt(receipt: Receipt): string{
